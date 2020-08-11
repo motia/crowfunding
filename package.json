@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "generate-types-truffle": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "generate-types-web": "typechain --target=web3-v1 'build/contracts/*.json' --outDir 'app/web3' && cp -r build/contracts app/web3",
+    "generate-types": "rm -rf app/web3 && yarn generate-types-web && yarn generate-types-truffle",
     "postinstall": "truffle compile && yarn generate-types",
     "migrate": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate",
     "migrate-reset": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate --reset",
@@ -18,6 +20,7 @@
     "@types/web3": "^1.2.2",
     "truffle": "^5.1.22",
     "typechain": "2.0.0",
+    "typechain-target-web3-v1": "^1.0.4",
     "typescript": "^3.8.3"
   }
 }
