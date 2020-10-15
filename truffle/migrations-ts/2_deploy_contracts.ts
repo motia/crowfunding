@@ -1,7 +1,9 @@
 const Manager = artifacts.require('Manager');
+const Test = artifacts.require('Test');
 
 module.exports = function(deployer) {
   deployer.deploy(Manager);
+  deployer.deploy(Test);
 
 } as Truffle.Migration
 

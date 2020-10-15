@@ -1,5 +1,2 @@
-node_modules
-build
-types
-migrations
-app/web3
+.idea
+secrets.json

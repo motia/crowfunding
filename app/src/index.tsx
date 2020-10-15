@@ -1,12 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Drizzle, generateStore } from "@drizzle/store";
+// @ts-ignore
+import {DrizzleContext} from "@drizzle/react-plugin";
+import drizzleOptions from './drizzleOptions';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+const drizzleStore = generateStore({drizzleOptions});
+const drizzle = new Drizzle(drizzleOptions, drizzleStore);
+// @ts-ignore
+window.drizzle = drizzle;
+
 ReactDOM.render(
   <React.StrictMode>
+  <DrizzleContext.Provider drizzle={drizzle}>
     <App />
+  </DrizzleContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

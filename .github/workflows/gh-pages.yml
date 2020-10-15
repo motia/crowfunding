@@ -1,0 +1,51 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: '12.x'
+
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache truffle dependencies
+        uses: actions/cache@v2
+        work-directory: ./truffle
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-truffle-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-truffle
+
+      - name: Cache app dependencies
+        uses: actions/cache@v2
+        work-directory: ./app
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-app-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-app
+
+      - run: yarn install --frozen-lockfile
+        work-directory: ./app
+      - run: yarn build
+        work-directory: ./app
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        work-directory: ./app
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
