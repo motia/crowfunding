@@ -1,9 +1,11 @@
 // @ts-ignore
 import * as IpfsHttpClient from "ipfs-http-client";
 
-const ipfsConfig = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')
-  ? { host: 'localhost', port: 500 }
-  : { host: 'ipfs.infura.io', port: 5001, protocol: 'https' };
+const ipfsConfig = {
+  host: process.env.REACT_APP_IPFS_HOST || 'ipfs.infura.io',
+  port: process.env.REACT_APP_IPFS_PORT || 5001,
+  protocol: process.env.REACT_APP_IPFS_SCHEME || 'https'
+};
 const ipfs = IpfsHttpClient(ipfsConfig);
 // @ts-ignore
 window.ipfs = ipfs;
