@@ -3,3 +3,5 @@ build
 types
 migrations
 app/src/web3
+secrets.json
+
