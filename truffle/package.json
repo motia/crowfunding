@@ -1,33 +1,33 @@
 {
   "scripts": {
     "generate-types-truffle": "typechain --target=truffle-v5 'build/contracts/*.json'",
-    "generate-types-web": "typechain --target=web3-v1 'build/contracts/*.json' --outDir '../app/src/web3' && cp -r build/contracts ../app/src/web3",
-    "generate-types": "rm -rf ../app/src/web3 && yarn generate-types-web && yarn generate-types-truffle",
-    "postinstall": "truffle compile && yarn generate-types",
-    "migrate": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate",
-    "migrate-reset": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate --reset",
-    "reset": "truffle compile && yarn generate-types && yarn migrate-reset",
+    "generate-types-web": "typechain --target=web3-v1 'build/contracts/*.json' --outDir '../app/src/web3' && ln -sf $(pwd)/build/contracts $(pwd)/../app/src/web3",
+    "generate-types": "yarn generate-types-web && yarn generate-types-truffle",
+    "postinstall": "yarn compile",
+    "build": "tsc -p ./tsconfig.migrate.json --outDir ./migrations",
+    "compile": "truffle compile && yarn generate-types",
+    "migrate": "truffle migrate",
+    "dev": "yarn compile && yarn migrate --reset",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.0.2",
+    "@openzeppelin/contracts": "3.2.0",
     "@truffle/hdwallet-provider": "^1.1.0"
   },
   "devDependencies": {
-    "@typechain/truffle-v5": "^2.0.0",
+    "@typechain/truffle-v5": "^2.0.2",
     "@types/bn.js": "^4.11.6",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.27",
     "@types/web3": "^1.2.2",
     "chai": "^4.2.0",
-    "eth-gas-reporter": "^0.2.17",
+    "eth-gas-reporter": "^0.2.18",
     "openzeppelin-test-helpers": "^0.5.1",
-    "remixd": "^0.2.3-alpha.4",
     "truffle": "^5.1.22",
-    "typechain": "2.0.0",
+    "typechain": "^3.0.0",
     "typechain-target-web3-v1": "^1.0.4",
-    "typescript": "^3.8.3",
+    "typescript": "^4.0.3",
     "web3-eth-contract": "^1.2.11"
   }
 }
