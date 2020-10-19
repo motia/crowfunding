@@ -7,7 +7,7 @@ import {Drizzle} from "@drizzle/store";
 // @ts-ignore
 import {newContextComponents} from "@drizzle/react-components";
 import DynamicContractData from "../components/DynamicContractData";
-import {abi as ProjectAbi} from '../web3/contracts/Project.json';
+import {abi as ProjectAbi} from '../web3/contracts/ProjectERC.json';
 import {ProjectData} from '../types';
 import {ProjectDetails} from "../components/ProjectDetails";
 import {MarkdownDisplay} from "../components/MarkdownDisplay";
@@ -92,7 +92,7 @@ export function ProjectPage({drizzle, drizzleState}: { drizzle: Drizzle, drizzle
     </div>
 
     <br/>
-    <Link to="/">{'<<'} Back</Link>
+    <Link to="/">&laquo; back</Link>
   </div>
 }
 
