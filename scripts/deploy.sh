@@ -17,6 +17,4 @@ yarn deploy
 
 # Deploy Backend
 cd ../truffle
-yarn deploy --network "$DEPLOY_NETWORK"
-
-
+yarn migrate --network "$DEPLOY_NETWORK"

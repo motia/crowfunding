@@ -1,5 +1,5 @@
 import {IDrizzleOptions} from '@drizzle/store';
-import Manager from "./web3/contracts/Manager.json";
+import Manager from './web3/contracts/Manager.json';
 
 export default {
     web3: {
