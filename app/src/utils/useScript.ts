@@ -17,5 +17,5 @@ export default (elementId: string, src: string, callback: () => void) => {
     }
 
     if (existingScript && callback) callback();
-  },[])
+  }, [])
 };

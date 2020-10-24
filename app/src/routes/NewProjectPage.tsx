@@ -8,9 +8,11 @@ import {uploadMdToIpfs} from "../utils/ipfsClient";
 
 const {ContractForm} = newContextComponents;
 
-export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizzle, drizzleState: any }) {
-  const [markdownSrc, setMarkdownSrc] = useState('');
-
+function EthAmountInputField({label, onChange, attrs}: {
+  label: string;
+  onChange: (amountInWei: number) => void;
+  attrs: { [k: string]: string };
+}) {
   const [inputSharePrice, setInputSharePrice] = useState<number | undefined>(undefined);
   const WEI_MULTIPLIERS = {
     wei: 1,
@@ -18,6 +20,52 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
     eth: Math.pow(10, 18),
   }
   const [inputSharePriceUnit, setInputSharePriceUnit] = useState<'wei' | 'gwei' | 'eth'>('gwei');
+
+  function syncSharePrice() {
+    onChange((inputSharePrice || 0) * WEI_MULTIPLIERS[inputSharePriceUnit]);
+  }
+
+  return <div className="field is-grouped">
+    <div className="control is-expanded">
+      <label className="label"
+             htmlFor={attrs.id}>
+        {label}
+      </label>
+      <input
+        id={attrs.id}
+        className="input"
+        type='number'
+        onChange={e => {
+          (e.target.value || parseFloat(e.target.value) === 0) && setInputSharePrice(parseFloat(e.target.value));
+          syncSharePrice()
+        }}
+        {...attrs}
+      />
+    </div>
+    <div className='control' style={{width: '6em'}}>
+      <label className='label'>&nbsp;</label>
+      <div className="select is-fullwidth">
+        <select
+          className='input'
+          onChange={e => {
+            setInputSharePriceUnit(e.target.value as any);
+            syncSharePrice();
+          }}
+          value={inputSharePriceUnit}
+        >
+          {
+            Object.keys(WEI_MULTIPLIERS).map(k => <option value={k} key={k}>{k.toUpperCase()}</option>)
+          }
+        </select>
+      </div>
+    </div>
+  </div>;
+}
+
+export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizzle, drizzleState: any }) {
+  const [markdownSrc, setMarkdownSrc] = useState('');
+  const [formLock, setFormLock] = useState(false);
+
 
   return <div>
     <h3 className="title">
@@ -34,17 +82,8 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
               contract='Manager'
               method="createProject"
               render={({inputs, inputTypes, state, handleInputChange, handleSubmit}: any) => {
-                function syncSharePrice() {
-                  handleInputChange({
-                    target: {
-                      name: 'sharePrice',
-                      value: (inputSharePrice || 0) * WEI_MULTIPLIERS[inputSharePriceUnit],
-                      type: 'number',
-                    }
-                  });
-                }
 
-                const inputsConfig: { [k: string]: { [attr: string]: string } } = {
+                const inputsConfig: { [k: string]: { label: string; placeholder: string; } } = {
                   name: {
                     label: 'Project name',
                     placeholder: 'Zeta Energy',
@@ -58,7 +97,7 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                     placeholder: '1000',
                   },
                   sharePrice: {
-                    label: 'Unit price of shares',
+                    label: 'Share unit price',
                     placeholder: '1000',
                   },
                   description: {
@@ -68,25 +107,29 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                 };
 
                 const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+                  setFormLock(true);
+
                   event.persist();
                   event.preventDefault();
 
-                  let cid = '';
-                  if (markdownSrc) {
-                    try {
-                      cid = (await uploadMdToIpfs(markdownSrc)).cid.toString();
-                    } catch (e) {
-                      console.error('Could not upload file to IPFS');
-                      console.error(e);
-                      // eslint-disable-next-line no-restricted-globals
-                      const shouldContinue = confirm('Could not store the description of the project,' +
-                        ' do you still want to create the project?')
-                      // TODO: notify user of error!!
-                      if (!shouldContinue) {
-                        throw e;
-                      }
-                    }
-                  }
+                  const cid = markdownSrc
+                    ? await uploadMdToIpfs(markdownSrc)
+                      .then((r => r.cid.toString()))
+                      .catch(e => {
+                        // eslint-disable-next-line no-restricted-globals
+                        const shouldAbort = confirm('Storing the description of the project has failed,' +
+                          ' do you want to abort creating the project?');
+
+                        if (!shouldAbort) {
+                          throw e;
+                        }
+
+                        console.error('Could not upload file to IPFS');
+                        console.error(e);
+                        return '';
+                      })
+                    : '';
+
                   handleInputChange({
                     target: {
                       name: 'descriptionCid',
@@ -95,8 +138,8 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                     }
                   });
 
-
                   handleSubmit(event);
+                  setFormLock(false);
                 };
                 return <form onSubmit={onSubmit}>
                   {
@@ -116,7 +159,7 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                                 className="input"
                                 required
                                 name={input.name}
-                                 type={inputTypes[index]}
+                                type={inputTypes[index]}
                                 value={state[input.name]}
                                 placeholder={inputsConfig[input.name].placeholder}
                                 onChange={handleInputChange}
@@ -125,42 +168,22 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                           </div>
                         ))}
 
-                  <div className="field is-grouped">
-                    <div className="control is-expanded">
-                      <label className="label"
-                             htmlFor="sharePrice">
-                        {inputsConfig.sharePrice.label}
-                      </label>
-                      <input
-                        id='sharePrice'
-                        className="input"
-                        required
-                        type='number'
-                        onChange={e => {
-                          (e.target.value || parseFloat(e.target.value) === 0) && setInputSharePrice(parseFloat(e.target.value));
-                          syncSharePrice();
-                        }}
-                        placeholder={inputsConfig.sharePrice.placeholder}
-                      />
-                    </div>
-                    <div className='control' style={{width: '6em'}}>
-                      <label className='label'>&nbsp;</label>
-                      <div className="select is-fullwidth">
-                        <select
-                          className='input'
-                          onChange={e => {
-                            setInputSharePriceUnit(e.target.value as any);
-                            syncSharePrice();
-                          }}
-                          value={inputSharePriceUnit}
-                        >
-                          {
-                            Object.keys(WEI_MULTIPLIERS).map(k => <option value={k} key={k}>{k.toUpperCase()}</option>)
-                          }
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                  <EthAmountInputField
+                    label={inputsConfig.sharePrice.label}
+                    attrs={{
+                      id: 'sharePrice',
+                      name: 'sharePrice',
+                      placeholder: inputsConfig.sharePrice.placeholder,
+                    }}
+                    onChange={(value) =>
+                      handleInputChange({
+                        target: {
+                          value: value,
+                          type: 'number',
+                          name: 'sharePrice',
+                        }
+                      })}
+                  />
 
                   <div className="field">
                     <div className="control">
@@ -181,7 +204,7 @@ export default function NewProjectPage({drizzle, drizzleState}: { drizzle: Drizz
                   </div>
 
                   <button
-                    className="button is-primary"
+                    className={`button is-primary ${formLock ? 'is-loading' : ''}`}
                     key="submit"
                     type="submit"
                   >

@@ -10,7 +10,7 @@ export function ProjectDetails({address, project, action}: {
     <div className="level">
       <div className="level-left">
         <div>
-          <h3 className="title is-marginless">{project.projectName}</h3>
+          <h3 className="title" style={{marginBottom: '8px'}}>{project.projectName}</h3>
           <h5 className="is-size-7">{address}</h5>
         </div>
       </div>
@@ -22,7 +22,7 @@ export function ProjectDetails({address, project, action}: {
           </div>
 
           <div className="has-text-right">
-            {project.sharesSold || 0}/{project.sharesTotal} <span className="is-size-7">Shares</span>
+            {project.totalSharesSold || 0}/{project.sharesTotal} <span className="is-size-7">Shares</span>
           </div>
         </div>
       </div>

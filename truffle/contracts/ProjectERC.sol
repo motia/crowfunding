@@ -24,14 +24,14 @@ contract ProjectERC is ERC777
         uint256 _sharePrice,
         string memory _descriptionCid
     )
-    ERC777(_descriptionCid, symbol, defaultOperators)
+    ERC777(name, symbol, defaultOperators)
     public
     {
         require(_sharePrice > 0, "Share price must be positive");
         sharePrice = _sharePrice;
         sharesSold = 0;
         owner = msg.sender;
-        descriptionCid = name;
+        descriptionCid = _descriptionCid;
 
         _mint(address(this), sharesCount, "", "");
     }
