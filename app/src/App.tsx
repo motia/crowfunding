@@ -5,7 +5,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
+  NavLink,
   withRouter,
 } from "react-router-dom";
 import {Drizzle} from "@drizzle/store";
@@ -20,6 +20,8 @@ import {ProjectData} from "./types";
 import {ProjectDetails} from "./components/ProjectDetails";
 import {InvestmentForm} from "./components/InvestmentForm";
 import {abi as ProjectAbi} from './web3/contracts/ProjectERC.json';
+import {MyInvestments} from "./routes/MyInvestments";
+import {MyOrders} from "./routes/Orders";
 
 const {AccountData, ContractData} = newContextComponents;
 
@@ -39,7 +41,25 @@ function App() {
               <div className="container">
                 <div className="columns">
                   <div className="column">
+                    <div className="tabs">
+                      <ul>
+                        <li>
+                          <NavLink to={`/`} exact activeClassName="is-active">
+                            Home
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink to={`/my-investments`} activeClassName="is-active">My Investments</NavLink>
+                        </li>
+                        <li>
+                          <NavLink to={`/my-orders`} activeClassName="is-active">My Orders</NavLink>
+                        </li>
+                      </ul>
+                    </div>
+
                     <Switch>
+                      <Route path="/my-orders" children={<MyOrders/>}/>
+                      <Route path="/my-investments" children={<MyInvestments/>}/>
                       <Route path="/projects/:id" children={<ProjectPage
                         drizzle={drizzle}
                         drizzleState={drizzleState}

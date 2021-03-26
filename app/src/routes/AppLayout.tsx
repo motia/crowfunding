@@ -2,7 +2,7 @@ import React from "react";
 // @ts-ignore
 import {DrizzleContext} from "@drizzle/react-plugin";
 
-export function AppStatus({children,}: { children: any }) {
+export function AppLayout({children,}: { children: any }) {
   return <DrizzleContext.Consumer>
     {(drizzleContext: DrizzleContext) =>
       <StatusDisplay drizzleContext={drizzleContext}>{children}</StatusDisplay>
@@ -90,10 +90,14 @@ const StatusDisplay = function (
     return children;
   }
 
-  return <div className="lds-ring">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+  return  <div className="hero is-fullheight has-background-light">
+    <div className="hero-body">
+      <div className="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
   </div>;
 }
