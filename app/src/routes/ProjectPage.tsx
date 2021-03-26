@@ -4,8 +4,7 @@ import {
   useParams,
 } from "react-router-dom";
 import {Drizzle} from "@drizzle/store";
-// @ts-ignore
-import {newContextComponents} from "@drizzle/react-components";
+
 import DynamicContractData from '../components/DynamicContractData';
 import {abi as ProjectAbi} from '../web3/contracts/ProjectERC.json';
 import {ProjectData} from '../types';
@@ -25,7 +24,7 @@ export function ProjectPage({drizzle, drizzleState, onEnter, onLeave}: {
     return () => {
       onLeave && onLeave(id);
     };
-  }, [id]);
+  }, [id, onEnter, onLeave]);
 
   return <div>
     <DynamicContractData

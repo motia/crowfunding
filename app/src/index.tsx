@@ -5,8 +5,10 @@ import { Drizzle, generateStore } from "@drizzle/store";
 import {DrizzleContext} from "@drizzle/react-plugin";
 import drizzleOptions from './drizzleOptions';
 import './index.css';
+import './loading.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {AppStatus} from "./routes/AppStatus";
 
 const drizzleStore = generateStore({drizzleOptions});
 const drizzle = new Drizzle(drizzleOptions, drizzleStore);
@@ -16,7 +18,9 @@ window.drizzle = drizzle;
 ReactDOM.render(
   <React.StrictMode>
   <DrizzleContext.Provider drizzle={drizzle}>
-    <App />
+    <AppStatus>
+      <App />
+    </AppStatus>
   </DrizzleContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')

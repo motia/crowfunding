@@ -16,10 +16,10 @@ import {ProjectPage} from "./routes/ProjectPage";
 import Pagination from './components/Pagination';
 import {RouteComponentProps} from "react-router";
 import DynamicContractData from "./components/DynamicContractData";
-import {abi as ProjectAbi} from './web3/contracts/ProjectERC.json';
 import {ProjectData} from "./types";
 import {ProjectDetails} from "./components/ProjectDetails";
 import {InvestmentForm} from "./components/InvestmentForm";
+import {abi as ProjectAbi} from './web3/contracts/ProjectERC.json';
 
 const {AccountData, ContractData} = newContextComponents;
 
@@ -31,14 +31,8 @@ function App() {
         {(drizzleContext: DrizzleContext) => {
           const {drizzle, drizzleState, initialized} = drizzleContext;
           if (!initialized) {
-            return "Loading...";
+            return <></>;
           }
-          // @ts-ignore
-          window.drizzle = drizzleState;
-          // @ts-ignore
-          window.drizzleState = drizzleState;
-          // @ts-ignore
-          window.ProjectAbi = ProjectAbi;
 
           return (
             <div className="section">
